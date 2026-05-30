@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# HomeOS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Private PWA-first household management for roommates. HomeOS tracks shared
+inventory, gym pantry stock, recurring bills, expenses, settlements, and member
+balances.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + Vite 8 + TypeScript
+- Tailwind CSS 4
+- React Router 7
+- Supabase Auth, Postgres, Realtime, and Storage
+- Zustand
+- Vitest and Playwright
+- Vercel-ready SPA deployment
 
-## React Compiler
+## Local Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+cp .env.example .env
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Set these values in `.env`:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
+
+## Supabase Setup
+
+1. Create a Supabase project.
+2. Run the SQL in `supabase/migrations/202605300001_homeos_schema.sql`.
+3. Enable Google OAuth in Supabase Auth.
+4. Add these redirect URLs:
+   - Local: `http://localhost:5173/auth/callback`
+   - Vercel: `https://your-vercel-domain/auth/callback`
+5. Seed the first allowed roommate email before anyone signs up:
+
+```sql
+insert into public.allowed_emails (email)
+values ('your.email@example.com');
+```
+
+6. In Supabase Auth Hooks, configure the before-user-created hook to call:
+
+```sql
+public.before_user_created_allowlist
+```
+
+That hook rejects accounts whose email is not present in `allowed_emails`.
+Invite codes are secondary; a code alone does not grant app access.
+
+## Security Model
+
+- The database is the security boundary.
+- All app tables have RLS enabled.
+- Reads and writes require `auth.uid()` to map to an active member of the
+  target household.
+- Admin mutations are guarded by SQL functions and RLS policies.
+- Deactivation prevents removing the last active admin.
+- Historical expense splits are immutable by design.
+- PWA caching is limited to static app assets, not household financial data.
+
+## Commands
+
+```bash
+pnpm dev
+pnpm build
+pnpm lint
+pnpm test:unit
+pnpm test:e2e
+```
+
+Unit and e2e tests are included but were not executed during implementation per
+request.
+
+## Deployment
+
+Deploy to Vercel as a Vite app.
+
+- Build command: `pnpm build`
+- Output directory: `dist`
+- Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel project
+  settings.
+- `vercel.json` includes SPA rewrites and baseline security headers.
+
+## Notes
+
+The Members page allowlists roommate emails. Sending invite emails requires a
+trusted server-side function with a Supabase service role key; do not expose a
+service role key in the Vite frontend.

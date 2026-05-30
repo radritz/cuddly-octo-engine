@@ -117,6 +117,15 @@ export type Settlement = {
   payment_ref: string | null
 }
 
+export type AllowedEmail = {
+  id: string
+  household_id: string | null
+  email: string
+  created_by: string | null
+  accepted_at: string | null
+  created_at: string
+}
+
 export type Balance = {
   memberId: string
   amount: number
@@ -142,12 +151,14 @@ export type Database = {
         Row: Household
         Insert: Partial<Household> & Pick<Household, 'name'>
         Update: Partial<Household>
+        Relationships: []
       }
       members: {
         Row: Member
         Insert: Partial<Member> &
           Pick<Member, 'id' | 'household_id' | 'email' | 'name'>
         Update: Partial<Member>
+        Relationships: []
       }
       items: {
         Row: Item
@@ -163,6 +174,7 @@ export type Database = {
             | 'created_by'
           >
         Update: Partial<Item>
+        Relationships: []
       }
       expenses: {
         Row: Expense
@@ -172,6 +184,7 @@ export type Database = {
             'household_id' | 'title' | 'amount' | 'paid_by' | 'source' | 'splits'
           >
         Update: Partial<Expense>
+        Relationships: []
       }
       bills: {
         Row: Bill
@@ -190,6 +203,7 @@ export type Database = {
             | 'next_due_date'
           >
         Update: Partial<Bill>
+        Relationships: []
       }
       settlements: {
         Row: Settlement
@@ -199,8 +213,16 @@ export type Database = {
             'household_id' | 'from_member_id' | 'to_member_id' | 'amount'
           >
         Update: Partial<Settlement>
+        Relationships: []
+      }
+      allowed_emails: {
+        Row: AllowedEmail
+        Insert: Partial<AllowedEmail> & Pick<AllowedEmail, 'email'>
+        Update: Partial<AllowedEmail>
+        Relationships: []
       }
     }
+    Views: Record<string, never>
     Functions: {
       create_household: {
         Args: { p_name: string; p_member_name: string }

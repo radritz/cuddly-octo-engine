@@ -21,7 +21,6 @@ import { useAuthStore } from '../stores/authStore'
 import { useBillStore } from '../stores/billStore'
 import { useExpenseStore } from '../stores/expenseStore'
 import { useInventoryStore } from '../stores/inventoryStore'
-import { useToastStore } from '../stores/toastStore'
 import { Avatar } from './Avatar'
 import { Button } from './Button'
 import { ToastHost } from './ToastHost'
@@ -55,7 +54,6 @@ export function AppShell() {
   const inventorySyncing = useInventoryStore((state) => state.isSyncing)
   const expenseSyncing = useExpenseStore((state) => state.isSyncing)
   const billSyncing = useBillStore((state) => state.isSyncing)
-  const showToast = useToastStore((state) => state.showToast)
 
   useRealtime(household?.id)
 

@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
@@ -41,7 +40,6 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: ({ url }) =>
-              url.origin === self.location.origin &&
               /\.(?:js|css|html|svg|png|ico|woff2?)$/.test(url.pathname),
             handler: 'StaleWhileRevalidate',
             options: {
