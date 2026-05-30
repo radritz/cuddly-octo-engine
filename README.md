@@ -26,7 +26,7 @@ Set these values in `.env`:
 
 ```bash
 VITE_SUPABASE_URL=https://your-project-ref.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
 ```
 
 ## Supabase Setup
@@ -83,7 +83,7 @@ Deploy to Vercel as a Vite app.
 
 - Build command: `pnpm build`
 - Output directory: `dist`
-- Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel project
+- Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in Vercel project
   settings.
 - `vercel.json` includes SPA rewrites and baseline security headers.
 

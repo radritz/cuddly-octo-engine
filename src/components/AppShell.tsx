@@ -63,8 +63,8 @@ export function AppShell() {
         <div className="max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-card">
           <h1 className="text-2xl font-medium text-ink">Configure Supabase</h1>
           <p className="mt-2 text-sm text-ink-muted">
-            Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env before
-            using HomeOS.
+            Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to .env
+            before using HomeOS.
           </p>
         </div>
       </div>
